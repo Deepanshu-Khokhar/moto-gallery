@@ -22,6 +22,7 @@ import com.javaram.gallery.ui.people.PeopleScreen
 import com.javaram.gallery.ui.people.PersonScreen
 import com.javaram.gallery.ui.search.PlacesMapScreen
 import com.javaram.gallery.ui.search.SearchScreen
+import com.javaram.gallery.ui.settings.SettingsScreen
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.javaram.gallery.GalleryViewModel
@@ -38,6 +39,7 @@ object Routes {
     const val MAP = "map"
     const val PEOPLE = "people"
     const val PERSON = "person/{id}"
+    const val SETTINGS = "settings"
     fun person(id: Long) = "person/$id"
     fun album(key: String) = "album/$key"
     fun search(q: String = "") = "search?q=" + android.net.Uri.encode(q)
@@ -96,6 +98,9 @@ fun GalleryNav(vm: GalleryViewModel) {
                     onBack = { nav.popBackStack() },
                     onOpenPerson = { nav.navigate(Routes.person(it)) },
                 )
+            }
+            composable(Routes.SETTINGS) {
+                SettingsScreen(vm = vm, onBack = { nav.popBackStack() })
             }
             composable(
                 Routes.PERSON,

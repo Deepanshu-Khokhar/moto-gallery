@@ -101,9 +101,11 @@ import com.javaram.gallery.ui.theme.GalleryTheme
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SystemUpdate
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import com.javaram.gallery.ui.Routes
 import com.javaram.gallery.ui.UpdateDialog
 import com.javaram.gallery.ui.components.ConfirmRequest
 import com.javaram.gallery.ui.components.GlassDialog
@@ -449,6 +451,7 @@ fun HomeScreen(
                     })
                 }
                 add(SheetOption("Refresh", Icons.Outlined.Refresh) { vm.scheduleRefresh(0) })
+                add(SheetOption("Settings", Icons.Outlined.Settings) { onOpenRoute(Routes.SETTINGS) })
             }
             else -> emptyList()
         }
