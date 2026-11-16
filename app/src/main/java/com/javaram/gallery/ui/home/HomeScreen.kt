@@ -155,6 +155,8 @@ fun HomeScreen(
     val bannerDismissed by vm.bannerDismissed.collectAsStateWithLifecycle()
     val update by vm.update.collectAsStateWithLifecycle()
     val people by vm.people.collectAsStateWithLifecycle()
+    val faceRecognition by vm.faceRecognitionEnabled.collectAsStateWithLifecycle()
+    val showPeople = com.javaram.gallery.facesVisible(faceRecognition)
     val memories by vm.memories.collectAsStateWithLifecycle()
     val hiddenAlbums by vm.hiddenAlbums.collectAsStateWithLifecycle()
     val hideMusicArt by vm.hideMusicArt.collectAsStateWithLifecycle()
@@ -265,6 +267,7 @@ fun HomeScreen(
                         onOpenTrash = onOpenTrash,
                         onAlbumMenu = { a, r -> sheet = HomeSheet.AlbumMenu(a, r) },
                         people = people,
+                        showPeople = showPeople,
                         onOpenPeople = onOpenPeople,
                         onOpenPerson = onOpenPerson,
                         onOpenSafe = { onOpenRoute("safe") },

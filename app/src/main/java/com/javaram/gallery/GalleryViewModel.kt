@@ -356,9 +356,19 @@ class GalleryViewModel(app: Application) : AndroidViewModel(app) {
 
     private var peopleWatch: Job? = null
     private val _people = MutableStateFlow<List<Person>>(emptyList())
-    val people: StateFlow<List<Person>> = _people.asStateFlow()
     private val _peopleByMedia = MutableStateFlow<Map<Long, Set<String>>>(emptyMap())
-    val peopleByMedia: StateFlow<Map<Long, Set<String>>> = _peopleByMedia.asStateFlow()
+    // Face-derived content is only exposed while recognition is on. Turning it off hides every
+    // People surface (the Albums row, person search and person memories) without deleting the
+    // persisted data: the raw flows above keep it, so it all reappears when recognition is back on.
+    // Null (still loading) or an unavailable switch also hides faces, never shows them by default.
+    val people: StateFlow<List<Person>> =
+        combine(_faceRecognition, _people) { enabled, list ->
+            if (facesVisible(enabled)) list else emptyList()
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    val peopleByMedia: StateFlow<Map<Long, Set<String>>> =
+        combine(_faceRecognition, _peopleByMedia) { enabled, map ->
+            if (facesVisible(enabled)) map else emptyMap()
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
     private val _peopleVersion = MutableStateFlow(0)
     val peopleVersion: StateFlow<Int> = _peopleVersion.asStateFlow()
 
@@ -459,7 +469,7 @@ class GalleryViewModel(app: Application) : AndroidViewModel(app) {
 
     // --- Memories & slideshow ---
     val memories: StateFlow<List<com.javaram.gallery.search.Memory>> =
-        combine(_all, _index, _peopleByMedia) { a, i, p -> Triple(a, i, p) }
+        combine(_all, _index, peopleByMedia) { a, i, p -> Triple(a, i, p) }
             .mapLatestDefault { (a, i, p) -> com.javaram.gallery.search.Memories.build(a, i, p) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -677,6 +687,12 @@ internal class OrderedSwitch(
  */
 internal fun faceScanTrigger(known: Boolean?, enabled: Boolean, changed: Boolean): Boolean =
     enabled && (changed || known == null)
+
+/**
+ * Whether face-derived content may be shown. Only an explicitly verified "on" shows faces:
+ * off, still loading (null) and unavailable all hide them.
+ */
+internal fun facesVisible(enabled: Boolean?): Boolean = enabled == true
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 private fun <T, R> kotlinx.coroutines.flow.Flow<T>.mapLatestDefault(block: suspend (T) -> R): kotlinx.coroutines.flow.Flow<R> =

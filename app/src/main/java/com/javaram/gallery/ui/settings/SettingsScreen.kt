@@ -95,8 +95,9 @@ fun SettingsScreen(vm: GalleryViewModel, onBack: () -> Unit) {
                             color = c.content,
                         )
                         Text(
-                            "When off, Gallery stops analysing new photos for faces. " +
-                                "Faces already found stay on this device.",
+                            "When off, Gallery stops analysing new photos for faces and hides the " +
+                                "People collection. Faces already found stay on this device and " +
+                                "reappear when you turn this back on.",
                             style = MaterialTheme.typography.bodySmall,
                             color = c.secondary,
                             modifier = Modifier.padding(top = 2.dp),
